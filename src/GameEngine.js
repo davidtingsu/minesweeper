@@ -21,7 +21,8 @@
 
 const DEFAULT_CELL = Object.freeze({
     flagged: false,
-    clicked: false
+    clicked: false,
+    mine: false,
 });
 export class GameEngine {
     constructor(m, n, mine_count){
@@ -159,7 +160,8 @@ export class GameEngine {
     getCellState(...args){
         const i = this._normalizeArgsToIndex(...args);
         const adjacentMineCount = this.getAdjacentMineCount(i);
-        return {...DEFAULT_CELL, ...this.state[i], adjacentMineCount};
+        const mine = this.hasMine(i);
+        return {...DEFAULT_CELL, ...this.state[i], adjacentMineCount, mine};
     }
     getCellCount(){
         return this.m * this.n;
