@@ -31,6 +31,7 @@ export class GameEngine {
         // n columns (x coord)
         this.n = n;
         this.mine_count = mine_count;
+        this.flagsLeft = mine_count;
         this.clickCount = 0;
         this.state = new Array(m * n);
     }
@@ -104,14 +105,34 @@ export class GameEngine {
         if (y < 0) return false;
         if (y >= this.m) return false;
         if (x >= this.n) return false;
-
         const total = this.m * this.n;
         const i = this._normalizeArgsToIndex(x,y);
-        return i >= 0 && i < total - 1;
+        return i >= 0 && i < total;
     }
     isClicked(...args){
         const {clicked} = this.getCellState(...args);
         return clicked;
+    }
+    doubleClick(...args){
+        const adjacentMineCount = this.getAdjacentMineCount(...args);
+        const flaggedNeighborCount = this._getFlaggedNeighborCount(...args);
+
+        if (adjacentMineCount === flaggedNeighborCount){
+            for (let ngb of this.getAdjacentCells(...args)){
+                const {flagged, clicked}= this.getCellState(ngb);
+                if (flagged) continue;
+                if (!clicked) this.click(...ngb);
+            }
+        }
+    }
+    _getFlaggedNeighborCount(...args){
+        let count = 0;
+        for (let ngb of this.getAdjacentCells(...args)){
+            if (this.getCellState(...ngb).flagged){
+                count++
+            }
+        }
+        return count;
     }
     click(...args){
         const [x,y] =  this._normalizeArgsToCoord(...args);
@@ -151,11 +172,22 @@ export class GameEngine {
     }
     placeFlag(...args){
         const [x, y] = this._normalizeArgsToCoord(...args);
+        const {clicked, flagged} = this.getCellState(x,y);
+        if (clicked || flagged) return;
+        if (!this.hasFlags()) return;
+        this.flagsLeft--;
         this.updateCell(x,y, {flagged: true});
+    }
+    hasFlags(){
+        return this.flagsLeft > 0;
     }
     toggleFlag(...args){
         const [x, y] = this._normalizeArgsToCoord(...args);
-        const {flagged} = this.getCellState(x,y);
+        const {flagged, clicked} = this.getCellState(x,y);
+        if (clicked) return;
+        if (!flagged && !this.hasFlags()) return;
+        if (flagged) this.flagsLeft++;
+        if (!flagged) this.flagsLeft--;
         this.updateCell(x,y, {flagged: !flagged});
     }
     isSolved(){
@@ -192,7 +224,6 @@ export class GameEngine {
     }
     *getAdjacentCells(...args){
         const [x, y] = this._normalizeArgsToCoord(...args);
-        let mines = [];
         for (let i = -1; i <= 1; i++){
             for (let j = -1; j <= 1; j++){
                 if (i == 0 && j == 0) continue;

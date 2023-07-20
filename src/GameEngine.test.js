@@ -140,3 +140,11 @@ test('placeFlag', () => {
     expect(engine.getCellState(flagX, flagY).clicked).toBe(false);
 
 });
+
+test('isInBounds', () => {
+    const engine = new GameEngine(9, 9);
+    expect(engine.isInBounds(0, 0)).toBe(true);
+    expect(engine.isInBounds(8, 8)).toBe(true);
+    expect(engine.isInBounds(8, 9)).toBe(false);
+
+})
