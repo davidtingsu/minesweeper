@@ -215,6 +215,8 @@ export class GameEngine {
         let mines = [];
         for (let i = -1; i <= 1; i++){
             for (let j = -1; j <= 1; j++){
+                const nextX = x+i, nextY = y+j;
+                if (!this.isInBounds(nextX, nextY)) continue;
                 if (this.hasMine(x+i, y+j)){
                     mines.push([x+i, y+j]);
                 }
