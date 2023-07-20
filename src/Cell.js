@@ -26,10 +26,10 @@ export const Cell = props => {
         '',
         'cursor-pointer',
         'flex',
-        'flex-col',
         'justify-center',
         'items-center',
-        {'bg-red-300': props.clicked && props.mine},
+        { 'flex-col': props.debug },
+        { 'bg-red-300': props.clicked && props.mine },
         { 'shadow-inner border-black border-solid border-1': props.clicked }
     );
     return (
@@ -46,7 +46,9 @@ export const Cell = props => {
             }}
         >
             <Content {...props} />
-            <span className="text-xs">{props.i}</span>
+            <span className={classNames('text-xs', {'hidden': !props.debug})}>
+                {props.i}
+            </span>
         </div>
     )
 }
