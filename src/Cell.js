@@ -34,7 +34,7 @@ export const Cell = props => {
     );
     return (
         <div
-            onMouseEnter={(e) => {props.onMouseEnter(e)}}
+            onMouseEnter={(e) => {props.onMouseEnter(e, props.i)}}
             onContextMenu={(e) => props.onContextMenu(e, props.i)}
             onDoubleClick={(e) => props.onDoubleClick(e, props.i)}
             onClick={() => props.onClick(props.i)}
