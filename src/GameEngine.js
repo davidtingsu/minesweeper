@@ -116,7 +116,7 @@ export class GameEngine {
     click(...args){
         const [x,y] =  this._normalizeArgsToCoord(...args);
         const {flagged, clicked} = this.getCellState(x,y);
-        if (flagged, clicked) return;
+        if (flagged || clicked) return;
         this.clickCount++;
         if (this.clickCount === 1){
             this.handleFirstClick(x, y);
