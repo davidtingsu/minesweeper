@@ -70,14 +70,18 @@ export class GameEngine {
     }
     _normalizeArgsToIndex(...args){
         let i;
-        if (args.length == 1){
+        if (args.length === 1){
             i = args[0];
-        } else if (args.length == 2){
+        } else if (args.length === 2){
             i = this.coordToIndex(...args);
         } else {
             throw `Invalid number of args ${args.length}`
         }
         return i;
+    }
+    _normalizeArgsToCoord(...args){
+        const i = this._normalizeArgsToIndex(...args);
+        return this.indexToCoord(i);
     }
     coordToIndex(x, y){
         return x + y * (this.n - 1);
@@ -86,13 +90,16 @@ export class GameEngine {
         return [i % (this.n-1), Math.floor(i/(this.n-1))];
     }
     /* handleFirstClick ensures that first click does not land on a mine */
-    handleFirstClick(x,y){
+    handleFirstClick(...args){
+       const [x,y] =  this._normalizeArgsToCoord(...args);
+
         if (this.hasMine(x, y)){
             this.removeMine(x, y);
         }
         this.replenishMines();
     }
-    click(x, y){
+    click(...args){
+        const [x,y] =  this._normalizeArgsToCoord(...args);
         this.clickCount++;
         if (this.clickCount === 1){
             this.handleFirstClick(x, y);
@@ -149,9 +156,10 @@ export class GameEngine {
         }
         return count;
     }
-    getCellState(x,y){
-        const i = this.coordToIndex(x,y);
-        return {...DEFAULT_CELL, ...this.state[i]};
+    getCellState(...args){
+        const i = this._normalizeArgsToIndex(...args);
+        const adjacentMineCount = this.getAdjacentMineCount(i);
+        return {...DEFAULT_CELL, ...this.state[i], adjacentMineCount};
     }
     getCellCount(){
         return this.m * this.n;
