@@ -1,0 +1,109 @@
+import { GameEngine } from './GameEngine';
+
+test('generates mines', () => {
+    const mineCount = 10;
+    const engine = new GameEngine(5, 6, 10);
+    expect(engine.generateMines().size).toBe(mineCount)
+});
+
+
+// coord is x,y or (c,r) and not row, column.
+test('coordToIndex', () => {
+    const engine = new GameEngine(5, 6, 10);
+    // first
+    expect(engine.coordToIndex(0, 0)).toBe(0);
+    expect(engine.coordToIndex(4, 1)).toBe(9);
+
+
+    // last
+    expect(engine.coordToIndex(4, 5)).toBe(29);
+
+    expect(engine.coordToIndex(1, 0)).toBe(1);
+});
+test('indexToCoord', () => {
+    const engine = new GameEngine(5, 6, 10);
+    // first
+    expect(engine.indexToCoord(0)).toEqual([0, 0]);
+    expect(engine.indexToCoord(9)).toEqual([4, 1]);
+
+
+    // last
+    expect(engine.indexToCoord(29)).toEqual([4, 5]);
+
+    expect(engine.indexToCoord(1)).toEqual([1, 0])
+});
+
+test('generateMine', () => {
+    const m = 5;
+    const n = 6;
+    const engine = new GameEngine(5, 6, 10);
+    const total = m * n;
+    let i = 1000;
+    expect(() => {
+        while(i--){
+            const mineIndex = engine.generateMine();
+            if (mineIndex < 0 || mineIndex >= total){
+                throw Error(`mine index ${mineIndex} out of bounds`);
+            }
+         }
+    }).not.toThrowError()
+
+});
+
+test('handleFirstClick', () => {
+    const m = 5;
+    const n = 6;
+    const engine = new GameEngine(5, 6, 10);
+    engine.initialize();
+    const mines = Array.from(engine.mines);
+    const arbitraryMine = mines[0];
+    expect(typeof arbitraryMine).toBe('number')
+    const mineCoords = engine.indexToCoord(arbitraryMine);
+
+    expect(engine.hasMine(...mineCoords)).toBe(true);
+
+    engine.handleFirstClick(...mineCoords);
+    expect(engine.hasMine(...mineCoords)).toBe(false);
+});
+
+test('isSolved', () => {
+    const m = 5;
+    const n = 6;
+    const engine = new GameEngine(5, 6, 10);
+    engine.initialize();
+
+    let count = 0;
+    for(let mine of engine.mines){
+        const mineCoords = engine.indexToCoord(mine);
+        engine.placeFlag(...mineCoords);
+        if (count < engine.mines.length){
+            expect(engine.isSolved()).toBe(false);
+        }
+        count++;
+    }
+    expect(engine.isSolved()).toBe(true);
+});
+
+test('isLoss', () => {
+    const m = 5;
+    const n = 6;
+    const engine = new GameEngine(m, n, 10);
+    engine.initialize();
+
+    const mines = Array.from(engine.mines);
+    const arbitraryMine = mines[0];
+    const mineCoords = engine.indexToCoord(arbitraryMine);
+    for (let i = 0; i < engine.getCellCount(); i++){
+        /// first click has to not be mine;
+        if (!engine.hasMine(i)){
+            engine.click(...engine.indexToCoord(i));
+            break;
+        }
+    }
+    engine.click(...mineCoords);
+    expect(engine.hasMine(...mineCoords)).toBe(true);
+    expect(engine.hasMine(arbitraryMine)).toBe(true);
+
+
+    expect(engine.isLoss()).toBe(true);
+});
