@@ -13,7 +13,7 @@
 // [ x ]    Matrix of state (m,n)  when I try to retrieve (x,y), it will be (x-1)*m+(y-1)
 // [ x ]    getCellState(x,y)
 // [ x ]    getAdjacentMineCount(x,y)
-// [ _ ]    isInBounds(x, y)
+// [ x ]    isInBounds(x, y)
 // [ _ ]    getDimensions(): m,n
 // [ x ]    m,n
 // [ x ]    click(x,y)
@@ -99,15 +99,35 @@ export class GameEngine {
         }
         this.replenishMines();
     }
+    isInBounds(x, y){
+        if (x < 0) return false;
+        if (y < 0) return false;
+        if (y >= this.m) return false;
+        if (x >= this.n) return false;
+
+        const total = this.m * this.n;
+        const i = this._normalizeArgsToIndex(x,y);
+        return i >= 0 && i < total - 1;
+    }
+    isClicked(...args){
+        const {clicked} = this.getCellState(...args);
+        return clicked;
+    }
     click(...args){
         const [x,y] =  this._normalizeArgsToCoord(...args);
+        const {flagged, clicked} = this.getCellState(x,y);
+        if (flagged, clicked) return;
         this.clickCount++;
         if (this.clickCount === 1){
             this.handleFirstClick(x, y);
         }
-        const {flagged} = this.getCellState(x,y);
-        if (flagged) return;
+
         this.updateCell(x, y, {clicked: true});
+        if (!this.hasAdjacentMines(x,y)){
+            for (let ngb of this.getAdjacentCells(x,y)){
+                this.click(...ngb);
+            }
+        }
     }
     updateCell(x,y, updates){
         const index = this.coordToIndex(x,y);
@@ -169,6 +189,21 @@ export class GameEngine {
             }
         }
         return mines;
+    }
+    *getAdjacentCells(...args){
+        const [x, y] = this._normalizeArgsToCoord(...args);
+        let mines = [];
+        for (let i = -1; i <= 1; i++){
+            for (let j = -1; j <= 1; j++){
+                if (i == 0 && j == 0) continue;
+                const nextX = x+i, nextY = y+j;
+                if (!this.isInBounds(nextX, nextY)) continue;
+                yield [nextX,nextY]
+            }
+        }
+    }
+    hasAdjacentMines(...args){
+        return this.getAdjacentMineCount(...args) > 0;
     }
     getCellState(...args){
         const i = this._normalizeArgsToIndex(...args);
