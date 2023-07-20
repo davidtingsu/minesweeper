@@ -82,6 +82,7 @@ test('isSolved', () => {
         count++;
     }
     expect(engine.isSolved()).toBe(true);
+    expect(engine.isOver()).toBe(true);
 });
 
 test('isLoss', () => {
@@ -106,4 +107,32 @@ test('isLoss', () => {
 
 
     expect(engine.isLoss()).toBe(true);
+    expect(engine.isOver()).toBe(true);
+
+});
+
+
+test('placeFlag', () => {
+    const m = 5;
+    const n = 6;
+    const engine = new GameEngine(m, n, 10);
+    engine.initialize();
+
+    const mines = Array.from(engine.mines);
+    const arbitraryMine = mines[0];
+    const mineCoords = engine.indexToCoord(arbitraryMine);
+    let flagX;
+    let flagY;
+    for (let i = 0; i < engine.getCellCount(); i++){
+        /// first click has to not be mine;
+        if (!engine.hasMine(i)){
+            [flagX, flagY] = engine.indexToCoord(i);
+            engine.placeFlag(flagX, flagY);
+            break;
+        }
+    }
+    engine.click(flagX, flagY);
+    expect(engine.getCellState(flagX, flagY).flagged).toBe(true);
+    expect(engine.getCellState(flagX, flagY).clicked).toBe(false);
+
 });

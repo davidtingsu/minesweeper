@@ -50,7 +50,7 @@ export class GameEngine {
         const total = this.m * this.n;
         while(set.size < this.mine_count){
             set.add(
-                Math.floor(Math.random() * (total + 1))
+               this.generateMine()
             )
         };
     }
@@ -105,6 +105,8 @@ export class GameEngine {
         if (this.clickCount === 1){
             this.handleFirstClick(x, y);
         }
+        const {flagged} = this.getCellState(x,y);
+        if (flagged) return;
         this.updateCell(x, y, {clicked: true});
     }
     updateCell(x,y, updates){
@@ -127,8 +129,14 @@ export class GameEngine {
         }
         return false;
     }
-    placeFlag(x, y){
+    placeFlag(...args){
+        const [x, y] = this._normalizeArgsToCoord(...args);
         this.updateCell(x,y, {flagged: true});
+    }
+    toggleFlag(...args){
+        const [x, y] = this._normalizeArgsToCoord(...args);
+        const {flagged} = this.getCellState(x,y);
+        this.updateCell(x,y, {flagged: !flagged});
     }
     isSolved(){
         const flaggedCount = this.state.filter(node => node.flagged).length;
@@ -139,6 +147,9 @@ export class GameEngine {
             }
         }
         return true;
+    }
+    isOver(){
+        return this.isSolved() || this.isLoss();
     }
     // updateState updates the state of all the cells
     updateState(){

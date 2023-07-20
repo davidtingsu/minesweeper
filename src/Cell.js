@@ -17,19 +17,24 @@ const Content = props => {
     if (props.adjacentMineCount > 0) {
         return <span className="font-bold">{props.adjacentMineCount}</span>
     }
-    return null;
+    // add placeholder so that cells take up space and don't shrink
+    return <span className="font-bold invisible">0</span>
 }
 export const Cell = props => {
     const className = classNames(
         'bg-unclickedgray',
+        '',
         'cursor-pointer',
         'flex',
         'justify-center',
         'items-center',
+        {'bg-red-300': props.clicked && props.mine},
         { 'shadow-inner border-black border-solid border-1': props.clicked }
     );
     return (
         <div
+            onContextMenu={(e) => props.onContextMenu(e, props.i)}
+            onDoubleClick={(e) => props.onDoubleClick(e, props.i)}
             onClick={() => props.onClick(props.i)}
             className={className}
             style={{
@@ -39,7 +44,7 @@ export const Cell = props => {
                 }
             }}
         >
-            <Content {...props}/>
+            <Content {...props} />
         </div>
     )
 }

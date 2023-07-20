@@ -18,9 +18,19 @@ function App() {
   const handleClick = (i) => {
     gameEngine.current.click(i);
     setBoard((oldBoard) => {
-      return {...gameEngine.current.state};
+      return { ...gameEngine.current.state };
     });
   };
+  const handleDoubleClick = (e,i) => {
+   console.log('handleDoubleClick');
+  };
+  const handleRightClick = (e, i) => {
+    e.preventDefault();
+    gameEngine.current.toggleFlag(i);
+    setBoard((oldBoard) => {
+      return { ...gameEngine.current.state };
+    });
+   };
   const getCellState = (i) => {
     return gameEngine.current.getCellState(i);
   };
@@ -28,7 +38,12 @@ function App() {
   return (
     <div className="App flex items-center justify-center w-screen h-screen">
       {!ready ? 'Loading...' :
-        <Minesweeper m={m} n={n} onClick={handleClick} getCellState={getCellState} />
+        <Minesweeper m={m} n={n}
+          onContextMenu={handleRightClick}
+          onDoubleClick={handleDoubleClick}
+          onClick={handleClick}
+          getCellState={getCellState}
+        />
       }
     </div>
   );
