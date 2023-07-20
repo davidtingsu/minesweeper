@@ -25,7 +25,7 @@ const DEFAULT_CELL = Object.freeze({
     mine: false,
 });
 export class GameEngine {
-    constructor(m, n, mine_count){
+    constructor(m, n, mine_count=10){
         // m rows (y coord)
         this.m = m;
         // n columns (x coord)
@@ -85,10 +85,10 @@ export class GameEngine {
         return this.indexToCoord(i);
     }
     coordToIndex(x, y){
-        return x + y * (this.n - 1);
+        return x + y * this.n;
     }
     indexToCoord(i){
-        return [i % (this.n-1), Math.floor(i/(this.n-1))];
+        return [(i % this.n), Math.floor(i/(this.n)), ];
     }
     /* handleFirstClick ensures that first click does not land on a mine */
     handleFirstClick(...args){
@@ -156,23 +156,28 @@ export class GameEngine {
         // getAdjacentMineCount
     }
     getAdjacentMineCount(...args){
-        const i = this._normalizeArgsToIndex(...args);
-        const [x, y] = this.indexToCoord(i);
-        let count = 0;
+        return this.getAdjacentMines(...args).length;
+    }
+    getAdjacentMines(...args){
+        const [x, y] = this._normalizeArgsToCoord(...args);
+        let mines = [];
         for (let i = -1; i <= 1; i++){
             for (let j = -1; j <= 1; j++){
                 if (this.hasMine(x+i, y+j)){
-                    count++;
+                    mines.push([x+i, y+j]);
                 }
             }
         }
-        return count;
+        return mines;
     }
     getCellState(...args){
         const i = this._normalizeArgsToIndex(...args);
+        const [x,y] = this._normalizeArgsToCoord(...args);
+
         const adjacentMineCount = this.getAdjacentMineCount(i);
+        const adjacentMines = this.getAdjacentMines(i);
         const mine = this.hasMine(i);
-        return {...DEFAULT_CELL, ...this.state[i], adjacentMineCount, mine};
+        return {...DEFAULT_CELL, ...this.state[i], adjacentMineCount, mine, adjacentMines, x,y,i, args, mines: this.mines};
     }
     getCellCount(){
         return this.m * this.n;

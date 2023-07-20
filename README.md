@@ -1,10 +1,10 @@
 # Getting Started with Create React App
 
 1. [x] Clicking a mine ends the game.
-2. []Clicking a square with an adjacent mine clears that square and shows the number of mines touching it.
+2. [x]Clicking a square with an adjacent mine clears that square and shows the number of mines touching it.
 3. []Clicking a square with no adjacent mine clears that square and clicks all adjacent squares.
 4. [x]This first click can never be a mine.
-5. []The numbers reflect the number of mines touching a square.
+5. [?]The numbers reflect the number of mines touching a square.
 6. [x]Right clicking on a square puts a flag on it. The flagged square can’t be opened by a click.
 7. []If the number in a square is equal to the number of squares touching that square that are flagged, double clicking on the number opens up all remaining squares around the number. (Note: this won’t work on touch screen devices)
 

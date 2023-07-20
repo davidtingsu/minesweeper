@@ -12,11 +12,11 @@ test('coordToIndex', () => {
     const engine = new GameEngine(5, 6, 10);
     // first
     expect(engine.coordToIndex(0, 0)).toBe(0);
-    expect(engine.coordToIndex(4, 1)).toBe(9);
+    expect(engine.coordToIndex(3, 1)).toBe(9);
 
 
     // last
-    expect(engine.coordToIndex(4, 5)).toBe(29);
+    expect(engine.coordToIndex(5, 4)).toBe(29);
 
     expect(engine.coordToIndex(1, 0)).toBe(1);
 });
@@ -24,13 +24,17 @@ test('indexToCoord', () => {
     const engine = new GameEngine(5, 6, 10);
     // first
     expect(engine.indexToCoord(0)).toEqual([0, 0]);
-    expect(engine.indexToCoord(9)).toEqual([4, 1]);
+    expect(engine.indexToCoord(9)).toEqual([3, 1]);
 
 
     // last
-    expect(engine.indexToCoord(29)).toEqual([4, 5]);
+    expect(engine.indexToCoord(29)).toEqual([5, 4]);
 
-    expect(engine.indexToCoord(1)).toEqual([1, 0])
+    expect(engine.indexToCoord(1)).toEqual([1, 0]);
+
+    const engine2 = new GameEngine(9, 9);
+    expect(engine2.indexToCoord(51)).toEqual([6, 5]);
+
 });
 
 test('generateMine', () => {

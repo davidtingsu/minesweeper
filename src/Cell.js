@@ -26,6 +26,7 @@ export const Cell = props => {
         '',
         'cursor-pointer',
         'flex',
+        'flex-col',
         'justify-center',
         'items-center',
         {'bg-red-300': props.clicked && props.mine},
@@ -45,6 +46,7 @@ export const Cell = props => {
             }}
         >
             <Content {...props} />
+            <span className="text-xs">{props.i}</span>
         </div>
     )
 }
