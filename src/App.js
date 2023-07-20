@@ -11,18 +11,26 @@ function App() {
 
   const gameEngine = useRef();
   useEffect(() => {
+    if (ready) return;
     gameEngine.current = new GameEngine(m, n, mineCount);
     gameEngine.current.initialize();
     setReady(true)
-  }, []);
+  }, [ready]);
+
+  useEffect((isOver) => {
+    if (!gameEngine.current?.isOver()) return;
+    alert('Game Over');
+  }, [gameEngine.current?.isOver()]);
+
   const handleClick = (i) => {
+    if (gameEngine.current.isOver()) return;
     gameEngine.current.click(i);
     setBoard((oldBoard) => {
       return { ...gameEngine.current.state };
     });
   };
-  const handleDoubleClick = (e,i) => {
-   console.log('handleDoubleClick');
+  const handleDoubleClick = (e, i) => {
+    console.log('handleDoubleClick');
   };
   const handleRightClick = (e, i) => {
     e.preventDefault();
@@ -30,13 +38,18 @@ function App() {
     setBoard((oldBoard) => {
       return { ...gameEngine.current.state };
     });
-   };
+  };
   const getCellState = (i) => {
     return gameEngine.current.getCellState(i);
   };
 
   return (
     <div className="App flex items-center justify-center w-screen h-screen">
+      <button onClick={() => { setReady(false) }}
+        className={'bg-sky-500 text-white p-3 m-3 absolute top-0 active:opacity-60 hover:opacity-90'}>
+        Reset
+      </button>
+
       {!ready ? 'Loading...' :
         <Minesweeper m={m} n={n}
           onContextMenu={handleRightClick}

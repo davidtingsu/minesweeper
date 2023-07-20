@@ -1,6 +1,6 @@
 # Getting Started with Create React App
 
-1. [] Clicking a mine ends the game.
+1. [x] Clicking a mine ends the game.
 2. []Clicking a square with an adjacent mine clears that square and shows the number of mines touching it.
 3. []Clicking a square with no adjacent mine clears that square and clicks all adjacent squares.
 4. [x]This first click can never be a mine.
